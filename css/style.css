@@ -158,3 +158,410 @@ a:link.external:after {
 .fa-ul li {
   margin-bottom: 0.25em;
 }
+
+/* ==========================================================================
+   WEB HARMONY TOOL CUSTOM STYLES
+   ========================================================================== */
+
+:root {
+    --border-color: #1f232d;
+    --text-main: #ffffff;
+    --text-blue: #4fa8ff;
+    --text-yellow: #f5b041;
+    --text-green: #2ecc71;
+    --active-red: #ff5252;
+    --bg-dark: #08080a;
+}
+
+body {
+    background-color: #0c0d12;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    overflow: hidden;
+}
+
+.harmony-app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    background-color: #0c0d12;
+}
+
+.main-workspace {
+    display: grid;
+    grid-template-columns: 430px 1fr; /* 2 Columnas: Izquierda Fija, Derecha Flexible */
+    gap: 15px;
+    padding: 15px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.left-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
+    min-height: 0;
+}
+
+.right-workspace {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.panel {
+    background: #12141a;
+    border: 1px solid #1f232d;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.panel h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #a0a5b0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #1f232d;
+    padding-bottom: 8px;
+}
+
+.keyboard-panel {
+    flex: 0 0 120px;
+    min-height: 120px;
+    padding: 8px;
+    overflow: hidden;
+}
+
+/* Botones y Extensiones */
+.btn {
+    background: #1a1d24;
+    border: 1px solid #2b303a;
+    color: #a0a5b0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background: #2b303a;
+    color: #fff;
+}
+
+.btn.wide {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.btn.toggle-btn {
+    background: #254099;
+    color: #fff;
+    border-color: #3a5cce;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.btn.toggle-btn:hover {
+    background: #3a5cce;
+}
+
+.grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-bottom: 15px;
+}
+
+.btn.sq {
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #4fa8ff;
+    padding: 2px;
+}
+
+.btn.sq.utility {
+    color: #f5b041;
+}
+
+.btn.sq.active {
+    border-color: #ff5252;
+    background-color: rgba(255, 82, 82, 0.1);
+    color: #ff5252;
+    box-shadow: inset 0 0 8px rgba(255,82,82,0.2);
+}
+
+/* Vistas y Tonnetz */
+.view-panel {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+#tonnetz-canvas {
+    width: 100%;
+    height: 100%;
+    min-height: 380px;
+    background: #08080a;
+    border-radius: 6px;
+    border: 1px solid #1f232d;
+    overflow: hidden;
+}
+
+/* Círculo de Quintas */
+#circle-container {
+    width: 380px;
+    height: 380px;
+    margin: 0 auto;
+    border-radius: 50%;
+    position: relative;
+}
+
+.circle-node {
+    position: absolute;
+    background-color: #2b303a;
+    color: #a0a5b0;
+    border: 2px solid #1a1d24;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+.circle-node.active { background-color: #254099; color: #fff; border-color: #3a5cce; box-shadow: 0 0 15px rgba(37, 64, 153, 0.6); }
+.circle-node.active.maj .roman-numeral { color: #2ecc71; }
+.circle-node.active.min .roman-numeral { color: #ff9500; }
+.circle-node.active.dim .roman-numeral { color: #ff5252; }
+.chord-name { font-size: 0.85rem; font-weight: bold; }
+.circle-node.dim { font-size: 0.75rem; }
+.roman-numeral { font-size: 0.75rem; margin-top: 2px; height: 12px; }
+
+/* Barra de Pestañas (Tabs) */
+.right-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 15px 0;
+    border-bottom: 1px solid #1f232d;
+    padding-bottom: 12px;
+}
+.right-tabs .tab-btn {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-weight: 600;
+    background: rgba(255,255,255,0.02);
+}
+.right-tabs .tab-btn.active {
+    background: #4fa8ff;
+    color: #000;
+    border-color: #4fa8ff;
+}
+
+.tab-contents {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+.tab-content {
+    display: none;
+    height: 100%;
+}
+.tab-content.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Loop controller */
+.loop-control-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    background: rgba(255,255,255,0.03);
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #1f232d;
+    margin: 10px 0;
+}
+.bpm-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.bpm-selector input[type="range"] {
+    width: 120px;
+    cursor: pointer;
+}
+.bpm-selector span#bpm-val {
+    font-weight: bold;
+    color: #4fa8ff;
+    width: 30px;
+    text-align: right;
+}
+
+.synth-selector-container {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(255,255,255,0.03);
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #1f232d;
+}
+.selector-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.selector-row span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.selector-row select, .selector-row button {
+    padding: 4px 8px;
+    background: #111;
+    color: #ccc;
+    border: 1px solid #1f232d;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+/* Progresiones */
+.progression-top-bar {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.prog-box {
+    background: transparent;
+    border: 1px solid #2b303a;
+    border-radius: 4px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.prog-box .roman {
+    color: #2ecc71;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.prog-box .chord {
+    color: #fff;
+    font-size: 0.75rem;
+}
+
+.prog-box.empty {
+    background: #0d0e12;
+    border-color: #1f232d;
+}
+
+.progression-info-display {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.roman-text {
+    color: #4fa8ff;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.chord-text {
+    color: #fff;
+    font-size: 1rem;
+}
+
+.preset-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Teclado Básico */
+.bottom-panel {
+    height: 140px;
+    background: #08080a;
+    border-top: 2px solid #1f232d;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.keyboard-container {
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    display: flex;
+    position: relative;
+}
+
+.keyboard-container .key {
+    flex: 1;
+    height: 100%;
+    border: 1px solid #111;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+
+.keyboard-container .key.white {
+    background: #fff;
+    z-index: 1;
+}
+
+.keyboard-container .key.white.active {
+    background: #4fa8ff;
+}
+
+.keyboard-container .key.black {
+    background: #111;
+    z-index: 2;
+    margin-left: -1.5%;
+    margin-right: -1.5%;
+    max-width: 3%;
+    height: 65%;
+}
+
+.keyboard-container .key.black.active {
+    background: #254099;
+}
