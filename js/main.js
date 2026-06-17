@@ -49,20 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateContext(cleanNote, mode);
     });
 
-    // Escuchar cambios de la progresión para sincronizar el Círculo de Quintas y la vista prioritaria
+    // Escuchar cambios de la progresión para sincronizar el Círculo de Quintas
     appBus.on('progressionUpdated', (data) => {
-        console.log("Sincronizando Progresión con Círculo de Quintas y Vista Prioritaria...");
-        // 1. Resaltar exactamente los acordes que componen la progresión activa en el círculo
+        console.log("Sincronizando Progresión con Círculo de Quintas...");
+        // Resaltar exactamente los acordes que componen la progresión activa en el círculo
         circle.highlightProgressionChords(data.mappedChords);
-
-        // 2. Sincronizar el enfoque: Switch automático al Tonnetz (vista prioritaria)
-        const viewTonnetz = document.getElementById('view-tonnetz');
-        if (viewTonnetz && viewTonnetz.classList.contains('hidden')) {
-            const btnToggle = document.getElementById('btn-toggle-tonnetz');
-            if (btnToggle) {
-                btnToggle.click();
-            }
-        }
     });
 
     // Escuchar cambios de vista en el Tonnetz para escalar/minimizar el círculo

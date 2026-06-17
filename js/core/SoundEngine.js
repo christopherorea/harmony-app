@@ -5,6 +5,9 @@ class SoundEngine {
         this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
         this.audioStarted = false;
         this.muted = false; // Estado de silencio de Tone.Destination
+        
+        // Registro para rastrear y liberar notas MIDI activas limpiamente
+        this.activeMidiNotes = new Map();
 
         this.attachEvents();
         this.initDOM();
@@ -49,6 +52,7 @@ class SoundEngine {
                     if (this.synth) {
                         try { this.synth.dispose(); } catch(e) {}
                     }
+                    this.activeMidiNotes.clear();
                     this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
                     this.synth.set({
                         oscillator: {
@@ -81,16 +85,43 @@ class SoundEngine {
                 console.log("Audio Context Iniciado");
             }
             
+            const midi = data.midi;
+            if (midi === undefined || midi === null) return;
+
+            // Si ya está sonando este mismo tono, lo liberamos primero para prevenir duplicación de osciladores (fuga de voces)
+            if (this.activeMidiNotes.has(midi)) {
+                const oldFreq = this.activeMidiNotes.get(midi);
+                try {
+                    this.synth.triggerRelease(oldFreq);
+                } catch(e) {}
+                this.activeMidiNotes.delete(midi);
+            }
+
             // Convertir número MIDI (ej. 60) a Frecuencia (ej. 261.63 Hz para Do)
-            const freq = Tone.Frequency(data.midi, "midi").toNote();
+            const freq = Tone.Frequency(midi, "midi").toNote();
             // Disparar la nota
             this.synth.triggerAttack(freq);
+            this.activeMidiNotes.set(midi, freq);
         });
 
         // Escuchar cuando se suelta la nota
         this.bus.on('noteOff', (data) => {
-            const freq = Tone.Frequency(data.midi, "midi").toNote();
-            this.synth.triggerRelease(freq);
+            const midi = data.midi;
+            if (midi === undefined || midi === null) return;
+
+            if (this.activeMidiNotes.has(midi)) {
+                const freq = this.activeMidiNotes.get(midi);
+                try {
+                    this.synth.triggerRelease(freq);
+                } catch(e) {}
+                this.activeMidiNotes.delete(midi);
+            } else {
+                // Fallback por si acaso
+                const freq = Tone.Frequency(midi, "midi").toNote();
+                try {
+                    this.synth.triggerRelease(freq);
+                } catch(e) {}
+            }
         });
     }
 }

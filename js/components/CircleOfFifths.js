@@ -159,7 +159,7 @@ class CircleOfFifths {
         let isAug = this.activeModifiers.includes('aug');
         let isDim = this.activeModifiers.includes('dim') || type === 'dim';
 
-        let third = type === 'min' ? 3 : 4;
+        let third = (type === 'min' || type === 'dim') ? 3 : 4;
         if (isSus4) third = 5;
         if (isSus2) third = 2;
 
@@ -256,17 +256,16 @@ class CircleOfFifths {
         let mapping = { maj: {}, min: {}, dim: {} };
 
         if (mode === 'aeolian') {
-            // Relativos menores: el tónico principal es menor (ej. Am es vi)
-            // Am (vi) -> C (I), Dm (ii) -> F (IV), Em (iii) -> G (V), Bdim (vii°)
+            // Relativos menores: el tónico principal es menor (ej. Am es i)
+            // Am (i) -> C (III), Dm (iv) -> F (VI), Em (v) -> G (VII), Bdim (ii°)
             // Para Am (index 0 de menores, que se alinea con C index 0 de mayores):
-            // Su I relativo mayor está en tonicIndex (C)
             const majTonic = tonicIndex; 
             activeIndices = [majTonic, mod(majTonic - 1, 12), mod(majTonic + 1, 12)];
 
             mapping = {
-                maj: { [majTonic]: 'I', [mod(majTonic - 1, 12)]: 'IV', [mod(majTonic + 1, 12)]: 'V' },
-                min: { [majTonic]: 'vi', [mod(majTonic - 1, 12)]: 'ii', [mod(majTonic + 1, 12)]: 'iii' },
-                dim: { [majTonic]: 'vii°' }
+                maj: { [majTonic]: 'III', [mod(majTonic - 1, 12)]: 'VI', [mod(majTonic + 1, 12)]: 'VII' },
+                min: { [majTonic]: 'i', [mod(majTonic - 1, 12)]: 'iv', [mod(majTonic + 1, 12)]: 'v' },
+                dim: { [majTonic]: 'ii°' }
             };
         } else {
             // Mayor (Ionian):
