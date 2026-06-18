@@ -50,18 +50,18 @@ class ProgressionManager {
                 'F': { 'I': 'F Maj', 'bII': 'Gb Maj', 'ii': 'G Min', 'iii': 'A Min', 'IV': 'Bb Maj', 'V': 'C Maj', 'vi': 'D Min', 'bVII': 'Eb Maj', 'vii°': 'E Dim' }
             },
             minor: {
-                'C': { 'i': 'C Min', 'ii°': 'D Dim', 'ii': 'D Dim', 'III': 'Eb Maj', 'iv': 'F Min', 'v': 'G Min', 'V': 'G Maj', 'VI': 'Ab Maj', 'VII': 'Bb Maj' },
-                'G': { 'i': 'G Min', 'ii°': 'A Dim', 'ii': 'A Dim', 'III': 'Bb Maj', 'iv': 'C Min', 'v': 'D Min', 'V': 'D Maj', 'VI': 'Eb Maj', 'VII': 'F Maj' },
-                'D': { 'i': 'D Min', 'ii°': 'E Dim', 'ii': 'E Dim', 'III': 'F Maj', 'iv': 'G Min', 'v': 'A Min', 'V': 'A Maj', 'VI': 'Bb Maj', 'VII': 'C Maj' },
-                'A': { 'i': 'A Min', 'ii°': 'B Dim', 'ii': 'B Dim', 'III': 'C Maj', 'iv': 'D Min', 'v': 'E Min', 'V': 'E Maj', 'VI': 'F Maj', 'VII': 'G Maj' },
-                'E': { 'i': 'E Min', 'ii°': 'F# Dim', 'ii': 'F# Dim', 'III': 'G Maj', 'iv': 'A Min', 'v': 'B Min', 'V': 'B Maj', 'VI': 'C Maj', 'VII': 'D Maj' },
-                'B': { 'i': 'B Min', 'ii°': 'C# Dim', 'ii': 'C# Dim', 'III': 'D Maj', 'iv': 'E Min', 'v': 'F# Min', 'V': 'F# Maj', 'VI': 'G Maj', 'VII': 'A Maj' },
-                'F#/Gb': { 'i': 'F# Min', 'ii°': 'G# Dim', 'ii': 'G# Dim', 'III': 'A Maj', 'iv': 'B Min', 'v': 'C# Min', 'V': 'C# Maj', 'VI': 'D Maj', 'VII': 'E Maj' },
-                'Db': { 'i': 'C# Min', 'ii°': 'D# Dim', 'ii': 'D# Dim', 'III': 'E Maj', 'iv': 'F# Min', 'v': 'G# Min', 'V': 'G# Maj', 'VI': 'A Maj', 'VII': 'B Maj' },
-                'Ab': { 'i': 'G# Min', 'ii°': 'A# Dim', 'ii': 'A# Dim', 'III': 'B Maj', 'iv': 'C# Min', 'v': 'D# Min', 'V': 'D# Maj', 'VI': 'E Maj', 'VII': 'F# Maj' },
-                'Eb': { 'i': 'Eb Min', 'ii°': 'F Dim', 'ii': 'F Dim', 'III': 'Gb Maj', 'iv': 'Ab Min', 'v': 'Bb Min', 'V': 'Bb Maj', 'VI': 'Cb Maj', 'VII': 'Db Maj' },
-                'Bb': { 'i': 'Bb Min', 'ii°': 'C Dim', 'ii': 'C Dim', 'III': 'Db Maj', 'iv': 'Eb Min', 'v': 'F Min', 'V': 'F Maj', 'VI': 'Gb Maj', 'VII': 'Ab Maj' },
-                'F': { 'i': 'F Min', 'ii°': 'G Dim', 'ii': 'G Dim', 'III': 'Ab Maj', 'iv': 'Bb Min', 'v': 'C Min', 'V': 'C Maj', 'VI': 'Db Maj', 'VII': 'Eb Maj' }
+                'C': { 'i': 'C Min', 'ii°': 'D Dim', 'ii': 'D Dim', 'III': 'Eb Maj', 'iv': 'F Min', 'v': 'G Min', 'V': 'G Maj', 'VI': 'Ab Maj', 'bVI': 'Ab Maj', 'VII': 'Bb Maj' },
+                'G': { 'i': 'G Min', 'ii°': 'A Dim', 'ii': 'A Dim', 'III': 'Bb Maj', 'iv': 'C Min', 'v': 'D Min', 'V': 'D Maj', 'VI': 'Eb Maj', 'bVI': 'Eb Maj', 'VII': 'F Maj' },
+                'D': { 'i': 'D Min', 'ii°': 'E Dim', 'ii': 'E Dim', 'III': 'F Maj', 'iv': 'G Min', 'v': 'A Min', 'V': 'A Maj', 'VI': 'Bb Maj', 'bVI': 'Bb Maj', 'VII': 'C Maj' },
+                'A': { 'i': 'A Min', 'ii°': 'B Dim', 'ii': 'B Dim', 'III': 'C Maj', 'iv': 'D Min', 'v': 'E Min', 'V': 'E Maj', 'VI': 'F Maj', 'bVI': 'F Maj', 'VII': 'G Maj' },
+                'E': { 'i': 'E Min', 'ii°': 'F# Dim', 'ii': 'F# Dim', 'III': 'G Maj', 'iv': 'A Min', 'v': 'B Min', 'V': 'B Maj', 'VI': 'C Maj', 'bVI': 'C Maj', 'VII': 'D Maj' },
+                'B': { 'i': 'B Min', 'ii°': 'C# Dim', 'ii': 'C# Dim', 'III': 'D Maj', 'iv': 'E Min', 'v': 'F# Min', 'V': 'F# Maj', 'VI': 'G Maj', 'bVI': 'G Maj', 'VII': 'A Maj' },
+                'F#/Gb': { 'i': 'F# Min', 'ii°': 'G# Dim', 'ii': 'G# Dim', 'III': 'A Maj', 'iv': 'B Min', 'v': 'C# Min', 'V': 'C# Maj', 'VI': 'D Maj', 'bVI': 'D Maj', 'VII': 'E Maj' },
+                'Db': { 'i': 'C# Min', 'ii°': 'D# Dim', 'ii': 'D# Dim', 'III': 'E Maj', 'iv': 'F# Min', 'v': 'G# Min', 'V': 'G# Maj', 'VI': 'A Maj', 'bVI': 'A Maj', 'VII': 'B Maj' },
+                'Ab': { 'i': 'G# Min', 'ii°': 'A# Dim', 'ii': 'A# Dim', 'III': 'B Maj', 'iv': 'C# Min', 'v': 'D# Min', 'V': 'D# Maj', 'VI': 'E Maj', 'bVI': 'E Maj', 'VII': 'F# Maj' },
+                'Eb': { 'i': 'Eb Min', 'ii°': 'F Dim', 'ii': 'F Dim', 'III': 'Gb Maj', 'iv': 'Ab Min', 'v': 'Bb Min', 'V': 'Bb Maj', 'VI': 'Cb Maj', 'bVI': 'Cb Maj', 'VII': 'Db Maj' },
+                'Bb': { 'i': 'Bb Min', 'ii°': 'C Dim', 'ii': 'C Dim', 'III': 'Db Maj', 'iv': 'Eb Min', 'v': 'F Min', 'V': 'F Maj', 'VI': 'Gb Maj', 'bVI': 'Gb Maj', 'VII': 'Ab Maj' },
+                'F': { 'i': 'F Min', 'ii°': 'G Dim', 'ii': 'G Dim', 'III': 'Ab Maj', 'iv': 'Bb Min', 'v': 'C Min', 'V': 'C Maj', 'VI': 'Db Maj', 'bVI': 'Db Maj', 'VII': 'Eb Maj' }
             }
         };
 

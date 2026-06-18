@@ -48,6 +48,8 @@ class ModifierEditor {
             button.classList.add('active');
             this.activeModifiers.add(modValue);
         }
+        
+        // Emitir el cambio de modificadores para que el acorde activo se actualice
         this.bus.emit('modifiersUpdated', Array.from(this.activeModifiers));
     }
 

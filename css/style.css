@@ -198,6 +198,47 @@ body {
     overflow: hidden;
 }
 
+/* RESPONSIVE DESIGN */
+@media (max-width: 900px) {
+    .main-workspace {
+        grid-template-columns: 1fr; /* Cambia a una sola columna en móviles */
+        overflow-y: auto;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    body {
+        overflow: auto; /* Permitir scroll en móviles */
+    }
+
+    .harmony-app {
+        height: auto;
+        min-height: 100vh;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .left-workspace, .right-workspace {
+        height: auto;
+        min-height: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .panel {
+        margin-bottom: 15px;
+        width: auto;
+        box-sizing: border-box;
+    }
+
+    .keyboard-panel {
+        flex: 0 0 auto;
+        height: 120px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
 .left-workspace {
     display: flex;
     flex-direction: column;
