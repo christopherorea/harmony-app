@@ -1,0 +1,20 @@
+{
+  "name": "harmony-tool",
+  "short_name": "Harmony",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#08080a",
+  "theme_color": "#b89742",
+  "icons": [
+    {
+      "src": "images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

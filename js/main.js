@@ -1,121 +1,87 @@
-var canvas, ctx, noteLabels, triadLabels;
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Iniciando Harmony Tool...");
 
-$(function(){
-  canvas = document.getElementById("canvas");
-  ctx = canvas.getContext("2d");
-  noteLabels = document.getElementById("note-labels");
-  triadLabels = document.getElementById("triad-labels");
-  $(triadLabels).hide();
+    // 1. Motores Core
+    const midiManager = new MidiManager(appBus);
+    const soundEngine = new SoundEngine(appBus); 
+    const musicTheory = new MusicTheory(appBus); // ¡Agregamos el cerebro aquí!
 
-  storage.init();
-  colorscheme.init('default');
-  audio.init();
-  tonnetz.init();
-  midi.init();
-  keyboard.init('piano');
+    // 2. Instanciación de la Interfaz
+    const circle = new CircleOfFifths(appBus, 'circle-container');
+    const modifierEditor = new ModifierEditor(appBus);
+    const progressionManager = new ProgressionManager(appBus);
+    const interactiveTonnetz = new InteractiveTonnetz(appBus);
+    const keyboard = new Keyboard(appBus, 'keyboard');
 
-  $('#tonnetz').mousewheel(function(event) {
-    tonnetz.setDensity(tonnetz.density - event.deltaY);
-    return false;
-  });
-  $(window).keypress(function(event) {
-    if (somethingHasFocus()) return;
+    // Inicializamos UI con una progresión por defecto
+    progressionManager.loadProgression('popClassic2');
 
-    var c = String.fromCharCode(event.which);
-    if (c == '+') {
-      tonnetz.setDensity(tonnetz.density - 2);
-    } else if (c == '-') {
-      tonnetz.setDensity(tonnetz.density + 2);
+    // Estado global de la aplicación (Director de Estado)
+    const appState = {
+        currentKey: 'C',
+        currentMode: 'ionian',
+        currentProgression: 'popClassic2',
+        activeView: 'editor'
+    };
+
+    // Función global para actualizar el contexto armónico entre todos los módulos
+    function updateContext(newKey, newMode) {
+        appState.currentKey = newKey;
+        appState.currentMode = newMode;
+        
+        console.log(`Actualizando Contexto Global: ${newKey} (${newMode})`);
+        
+        // 1. Propagar al Círculo de Quintas
+        const targetArray = newMode === 'aeolian' ? circle.minors : circle.majors;
+        const rootIndex = targetArray.findIndex(n => n.startsWith(newKey));
+        if (rootIndex !== -1) {
+            circle.highlightKeyGroup(rootIndex, newMode);
+        }
+
+        // 2. Propagar y transponer el ProgressionManager diatónicamente
+        progressionManager.refresh(newKey, newMode);
     }
-  });
 
-  $('#navbar a[data-toggle="tab"]').on('shown.bs.tab', function() {
-    if ($(this).attr('href') != "#")
-      $('#tabs').collapse('show');
-      collapseNav();
-  });
+    // Registrar el clic en un nodo del Círculo para cambiar el contexto global
+    appBus.on('keyChanged', (data) => {
+        const mode = data.type === 'min' ? 'aeolian' : 'ionian';
+        const cleanNote = data.note.split('/')[0]; // Limpiar notas dobles como F#/Gb -> F#
+        updateContext(cleanNote, mode);
+    });
 
-  $('#navbar a[data-toggle="tab"]').click(function() {
-    if ($(this).parent().hasClass('active')) {
-      $('#tabs').collapse('hide');
-    }
-  });
+    // Escuchar cambios de la progresión para sincronizar el Círculo de Quintas
+    appBus.on('progressionUpdated', (data) => {
+        console.log("Sincronizando Progresión con Círculo de Quintas...");
+        // Resaltar exactamente los acordes que componen la progresión activa en el círculo
+        circle.highlightProgressionChords(data.mappedChords);
+    });
 
-  $('.tab-link').click(function(event) {
-    event.preventDefault();
-    var href = $(this).attr('href');
-    $('#navbar a[data-toggle="tab"][href="' + href + '"]').tab('show');
-  });
+    // Escuchar cambios de vista en el Tonnetz para escalar/minimizar el círculo
+    appBus.on('viewChanged', (view) => {
+        appState.activeView = view;
+        if (view === 'tonnetz') {
+            circle.minimize();
+        } else {
+            circle.restore();
+        }
+    });
 
-  $('#tabs').on('hidden.bs.collapse', noTab);
-  $('#tonnetz').click(collapseNavAndTabs);
-  $('.navbar-brand').click(function(event) {
-    event.preventDefault();
-    collapseNavAndTabs();
-  });
+    // Puente de Sincronización Armónica y Propagación de Estado
+    appBus.on('chordDetected', (chordData) => {
+        console.log("Acorde Detectado en AppBus:", chordData);
+        // 1. Actualizar el Círculo de Quintas con la tónica y el modo correcto
+        circle.highlightKeyGroup(chordData.rootIndex, chordData.mode);
+        
+        // 2. Actualizar la vista de Progresiones
+        progressionManager.updateProgressionStatus(chordData);
+    });
 
-  $('#panic').click(function() { tonnetz.panic(); });
-  $('#enable-sustain').click(function() { tonnetz.toggleSustainEnabled(); });
-  $('#show-note-names').click(function() { $(noteLabels).toggle(); });
-  $('#show-triad-names').click(function() { $(triadLabels).toggle(); });
-  $('#show-unit-cell').click(function() { tonnetz.toggleUnitCell(); });
-  $('#ghost-duration').on('input change propertychange paste', function() {
-    if(!tonnetz.setGhostDuration($(this).val())) {
-      $(this).closest('.form-group').addClass('has-error');
-    } else {
-      $(this).closest('.form-group').removeClass('has-error');
-    }
-  });
-  $('input[type=radio][name=layout]').change(function() {
-    tonnetz.setLayout($(this).val());
-  });
-  $('input[type=radio][name=kbd-layout]').change(function() {
-    keyboard.layout = $(this).val();
-    tonnetz.panic();
-  });
+    appBus.on('chordCleared', () => {
+        // Limpiar iluminaciones y restablecer estado de progresión
+    });
 
-  $('[data-toggle="tooltip"]').tooltip();
-
-  // Open links with data-popup="true" in a new window.
-  $('body').on('click', 'a[data-popup]', function(event) {
-    window.open($(this)[0].href);
-    event.preventDefault();
-  });
+    // 3. Suscripciones Globales de prueba
+    appBus.on('noteOn', (data) => console.log(`MIDI In: ${data.midi}`));
+    appBus.on('modifiersUpdated', (mods) => console.log(`Extensiones Activas:`, mods));
 });
-
-function collapseNav() {
-  if($('.navbar-toggle').is(':visible') && $('.navbar-collapse').hasClass('in')) {
-    $('.navbar-toggle').click();
-  }
-}
-
-function collapseNavAndTabs() {
-  $('#tabs').collapse('hide');
-  collapseNav();
-}
-
-function noTab() {
-  $('#dummy-tab').tab('show');
-}
-
-function somethingHasFocus() {
-  return $(':focus').is('input, select, button, textarea');
-}
-
-function showAlert(text, type) {
-  var a = $('<div class="alert alert-'+type+' alert-dismissible fade" role="alert">' +
-           '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-           '<span aria-hidden="true">×</span></button></div>');
-  a.append(document.createTextNode(text));
-  $('#messages').append(a);
-  a.addClass('in');
-
-  var numMessages = $('#messages').children().length;
-  if (numMessages > 3) {
-    $('#messages').children().slice(0, numMessages-3).alert('close');
-  }
-}
-
-function showWarning(text) { showAlert(text, 'warning'); }
-function showError(text) { showAlert(text, 'danger'); }
 function showSuccess(text) { showAlert(text, 'success'); }

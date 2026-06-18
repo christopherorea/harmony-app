@@ -36,6 +36,18 @@ var keyboard = (function() {
   var getPitchFromKeyboardEvent = function(event) {
     var note = BASE_PITCH[module.layout] + LAYOUTS[module.layout][event.which];
 
+    if (module.layout === 'riemann') {
+      // The Tonnetz is based on pitch classes (modulo 12).
+      // We want to keep the note within a fixed range, e.g., 2 octaves.
+      var range = 24; 
+      var offset = BASE_PITCH['riemann'] - 12;
+      
+      // Normalize note to be within [offset, offset + range)
+      var normalized = (note - offset) % range;
+      if (normalized < 0) normalized += range;
+      note = offset + normalized;
+    }
+
     if (isFinite(note) && !event.ctrlKey && !event.altKey && !event.metaKey)
       return note;
     else
@@ -55,6 +67,14 @@ var keyboard = (function() {
 
     var note = getPitchFromKeyboardEvent(event);
     if (note != null) {
+      // Double check normalization for riemann layout to prevent octave climbing
+      if (module.layout === 'riemann') {
+        var range = 24;
+        var offset = BASE_PITCH['riemann'] - 12;
+        var normalized = (note - offset) % range;
+        if (normalized < 0) normalized += range;
+        note = offset + normalized;
+      }
       tonnetz.noteOn(16, note);
       return false;
     }
@@ -65,6 +85,14 @@ var keyboard = (function() {
 
     var note = getPitchFromKeyboardEvent(event);
     if (note != null) {
+      // Double check normalization for riemann layout to prevent octave climbing
+      if (module.layout === 'riemann') {
+        var range = 24;
+        var offset = BASE_PITCH['riemann'] - 12;
+        var normalized = (note - offset) % range;
+        if (normalized < 0) normalized += range;
+        note = offset + normalized;
+      }
       tonnetz.noteOff(16, note);
       return false;
     }
