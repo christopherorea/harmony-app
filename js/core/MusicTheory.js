@@ -72,6 +72,15 @@ class MusicTheory {
                     notes: notes
                 };
             }
+            // [0, 4, 8] = Aumentado
+            if (intervals.includes(4) && intervals.includes(8)) {
+                return {
+                    name: `${circleRootName} Aug`,
+                    rootIndex: rootIndex,
+                    mode: 'lydian',
+                    notes: notes
+                };
+            }
             // [0, 3, 6] = Disminuido
             if (intervals.includes(3) && intervals.includes(6)) {
                 return {
