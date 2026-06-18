@@ -38,56 +38,68 @@ class MusicTheory {
     }
 
     detectChord(notes) {
+        // Mapa de enarmónicos para el círculo de quintas
+        const enharmonicMap = {
+            'C#': 'Db',
+            'D#': 'Eb',
+            'F#': 'F#/Gb',
+            'G#': 'Ab',
+            'A#': 'Bb'
+        };
+
+        // Función auxiliar: obtiene el índice del círculo para un Pitch Class (0-11)
+        const getCircleIndex = (pitchClass) => {
+            const noteName = this.noteNames[pitchClass];
+            const circleName = enharmonicMap[noteName] || noteName;
+            return this.circleOfFifthsOrder.indexOf(circleName);
+        };
+
         // Recorremos cada nota del acorde como posible raíz para soportar inversiones
         for (let i = 0; i < notes.length; i++) {
             const root = notes[i];
             const intervals = notes.map(n => (n - root + 12) % 12);
-
+            
             const rootName = this.noteNames[root];
-            // Mapeamos el nombre de la raíz al formato usado en el círculo de quintas
-            let circleRootName = rootName;
-            if (rootName === 'C#') circleRootName = 'Db';
-            if (rootName === 'D#') circleRootName = 'Eb';
-            if (rootName === 'F#') circleRootName = 'F#/Gb';
-            if (rootName === 'G#') circleRootName = 'Ab';
-            if (rootName === 'A#') circleRootName = 'Bb';
+            const displayName = enharmonicMap[rootName] || rootName;
 
-            const rootIndex = this.circleOfFifthsOrder.indexOf(circleRootName);
+            const hasMajorThird = intervals.includes(4);
+            const hasMinorThird = intervals.includes(3);
+            const hasPerfectFifth = intervals.includes(7);
+            const hasAugmentedFifth = intervals.includes(8);
+            const hasDiminishedFifth = intervals.includes(6);
 
-            // [0, 4, 7] = Mayor
-            if (intervals.includes(4) && intervals.includes(7)) {
-                return {
-                    name: `${circleRootName} Maj`,
-                    rootIndex: rootIndex,
-                    mode: 'ionian',
-                    notes: notes
+            if (hasMajorThird && hasPerfectFifth) {
+                return { 
+                    name: `${displayName} Maj`, 
+                    rootIndex: getCircleIndex(root), 
+                    mode: 'ionian', 
+                    notes: notes 
                 };
             }
-            // [0, 3, 7] = Menor
-            if (intervals.includes(3) && intervals.includes(7)) {
-                return {
-                    name: `${circleRootName} Min`,
-                    rootIndex: rootIndex,
-                    mode: 'aeolian',
-                    notes: notes
+            if (hasMinorThird && hasPerfectFifth) {
+                // Acorde Menor: El índice del círculo corresponde a su Relativa Mayor (+3 semitonos)
+                const relativeMajor = (root + 3) % 12;
+                return { 
+                    name: `${rootName} Min`, 
+                    rootIndex: getCircleIndex(relativeMajor), 
+                    mode: 'aeolian', 
+                    notes: notes 
                 };
             }
-            // [0, 4, 8] = Aumentado
-            if (intervals.includes(4) && intervals.includes(8)) {
-                return {
-                    name: `${circleRootName} Aug`,
-                    rootIndex: rootIndex,
-                    mode: 'lydian',
-                    notes: notes
+            if (hasMajorThird && hasAugmentedFifth) {
+                return { 
+                    name: `${displayName} Aug`, 
+                    rootIndex: getCircleIndex(root), 
+                    mode: 'lydian', 
+                    notes: notes 
                 };
             }
-            // [0, 3, 6] = Disminuido
-            if (intervals.includes(3) && intervals.includes(6)) {
-                return {
-                    name: `${circleRootName} Dim`,
-                    rootIndex: rootIndex,
-                    mode: 'locrian',
-                    notes: notes
+            if (hasMinorThird && hasDiminishedFifth) {
+                return { 
+                    name: `${displayName} Dim`, 
+                    rootIndex: getCircleIndex(root), 
+                    mode: 'locrian', 
+                    notes: notes 
                 };
             }
         }
