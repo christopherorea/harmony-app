@@ -20,14 +20,22 @@ class CircleOfFifths {
         });
 
         // Escuchar al motor de teoría
+        // Escuchar al motor de teoría
         this.bus.on('chordDetected', (chordData) => {
             const chordName = typeof chordData === 'object' ? chordData.name : chordData;
             const isMinor = chordName.includes('Min');
-            const rootNote = chordName.split(' ')[0]; // Extrae "C", "A", etc.
+            
+            // Extraemos la nota real considerando posibles alteraciones (C, C#, Db)
+            const rootParts = chordName.split(' ')[0]; 
 
-            // 1. Iluminar el Key-Group central
             const targetArray = isMinor ? this.minors : this.majors;
-            const index = targetArray.findIndex(n => n.startsWith(rootNote));
+            
+            // Búsqueda estricta limpiando los sufijos para comparar peras con peras
+            const index = targetArray.findIndex(n => {
+                const cleanNodeName = isMinor ? n.replace('m', '') : n;
+                // Soporta casos exactos y casos con slash como F#/Gb
+                return cleanNodeName === rootParts || cleanNodeName.split('/').includes(rootParts);
+            });
             
             if (index !== -1) {
                 this.highlightKeyGroup(index, isMinor ? 'aeolian' : 'ionian');
@@ -83,27 +91,28 @@ class CircleOfFifths {
         
         let activeNotes = [];
 
-        const playChord = () => {
-            this.highlightKeyGroup(index, type === 'min' ? 'aeolian' : 'ionian');
-            this.bus.emit('keyChanged', { note: label, type: type, index: index });
-
-            if (activeNotes.length > 0) {
-                activeNotes.forEach(midi => this.bus.emit('noteOff', { midi }));
-            }
-
-            activeNotes = this.getChordMidiNotes(label, type);
-            activeNotes.forEach(midi => {
-                this.bus.emit('noteOn', { midi: midi, velocity: 90 });
-            });
-        };
-
         const releaseChord = () => {
             if (activeNotes.length > 0) {
                 activeNotes.forEach(midi => {
                     this.bus.emit('noteOff', { midi: midi });
                 });
+                // Vaciamos el array para garantizar que no haya huérfanos
                 activeNotes = [];
             }
+        };
+
+        const playChord = () => {
+            this.highlightKeyGroup(index, type === 'min' ? 'aeolian' : 'ionian');
+            this.bus.emit('keyChanged', { note: label, type: type, index: index });
+
+            // 1. Forzamos un release de seguridad antes de asignar nuevas notas
+            releaseChord();
+
+            // 2. Asignamos y disparamos las nuevas notas
+            activeNotes = this.getChordMidiNotes(label, type);
+            activeNotes.forEach(midi => {
+                this.bus.emit('noteOn', { midi: midi, velocity: 90 });
+            });
         };
 
         // Eventos de ratón
@@ -284,10 +293,12 @@ class CircleOfFifths {
             const type = node.classList.contains('maj') ? 'maj' : (node.classList.contains('min') ? 'min' : 'dim');
             
             if (activeIndices.includes(idx)) {
-                if (type === 'dim' && idx !== (mode === 'aeolian' ? tonicIndex : tonicIndex)) {
-                    // Mantener el vii° alineado al tónico mayor
+                // Versión corregida y simplificada:
+                if (type === 'dim' && idx !== tonicIndex) {
+                    // Mantener el acorde disminuido alineado a la cuña central principal
                     if (idx !== activeIndices[0]) return;
                 }
+                
                 node.classList.add('active');
                 if (mapping[type][idx]) node.querySelector('.roman-numeral').textContent = mapping[type][idx];
             }
