@@ -113,6 +113,15 @@ class Keyboard {
                 const shift = this.startMidi - 48;
                 midiNote += shift;
 
+                // Normalizar octavas en modo Tonnetz (isomórfico) para evitar que suban infinitamente
+                if (this.layoutMode === 'tonnetz') {
+                    const range = 24; // 1 octava
+                    const offset = 60; // Centrado en Do medio (60)
+                    let normalized = (midiNote - offset) % range;
+                    if (normalized < 0) normalized += range;
+                    midiNote = offset + normalized;
+                }
+
                 this.bus.emit('noteOn', { midi: midiNote, velocity: 100 });
                 activeComputerNotes.set(key, midiNote);
             }

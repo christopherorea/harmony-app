@@ -62,7 +62,7 @@ class InteractiveTonnetz {
             .attr('height', '100%')
             .style('background', '#08080a'); // Fondo negro/oscuro elegante
 
-        const u = 55; // Distancia entre nodos para un diseño amplio y elegante (eje horizontal/diagonal)
+        const u = 80; // Aumentado de 55 a 80 para hacer la red más amplia y espaciosa
         const yUnit = u * Math.sqrt(3);
 
         const cx = width / 2;
@@ -175,6 +175,37 @@ class InteractiveTonnetz {
             .attr('stroke-width', 1.2)
             .style('cursor', 'pointer');
 
+        // Añadir etiquetas de notas en el centro de cada triángulo
+        svg.selectAll('.tonnetz-label')
+            .data(triangles).enter()
+            .append('text')
+            .attr('class', 'tonnetz-label')
+            .attr('x', d => (d.vertices[0].x + d.vertices[1].x + d.vertices[2].x) / 3)
+            .attr('y', d => (d.vertices[0].y + d.vertices[1].y + d.vertices[2].y) / 3)
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'central')
+            .attr('fill', 'rgba(255, 255, 255, 0.3)')
+            .style('font-size', '10px')
+            .style('font-family', 'monospace')
+            .style('pointer-events', 'none')
+            .text(d => {
+                // Encontrar la nota raíz del acorde para mostrarla
+                let root = '';
+                const vertices = d.vertices;
+                for (let v of vertices) {
+                    const otherPitches = vertices.filter(x => x !== v).map(x => (x.pitch - v.pitch + 12) % 12);
+                    if (otherPitches.includes(4) && otherPitches.includes(7)) {
+                        root = v.noteName;
+                        break;
+                    }
+                    if (otherPitches.includes(3) && otherPitches.includes(7)) {
+                        root = v.noteName;
+                        break;
+                    }
+                }
+                return d.type === 'minor' ? root.toLowerCase() : root;
+            });
+
         // Hacer que las caras respondan al clic (reproduce la tríada)
         faces.on('mousedown', (event, d) => {
             d.midiNotes.forEach(midi => this.bus.emit('noteOn', { midi, velocity: 80 }));
@@ -190,15 +221,37 @@ class InteractiveTonnetz {
             }
         });
 
-        // Soporte táctil completo para caras
+        // Soporte táctil mejorado para caras (Glide/Slide)
         faces.on('touchstart', (event, d) => {
             event.preventDefault();
+            this.currentActiveChord = d;
             d.midiNotes.forEach(midi => this.bus.emit('noteOn', { midi, velocity: 80 }));
+        });
+
+        faces.on('touchmove', (event) => {
+            event.preventDefault();
+            
+            // En touchmove, D3 no pasa automáticamente el dato 'd' del elemento
+            // Necesitamos encontrar qué elemento está bajo el dedo
+            const touch = event.touches[0];
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (target && target.classList.contains('tonnetz-face')) {
+                const d = d3.select(target).datum();
+                if (this.currentActiveChord && this.currentActiveChord !== d) {
+                    // Apagar el acorde anterior
+                    this.currentActiveChord.midiNotes.forEach(midi => this.bus.emit('noteOff', { midi }));
+                    // Encender el nuevo
+                    d.midiNotes.forEach(midi => this.bus.emit('noteOn', { midi, velocity: 80 }));
+                    this.currentActiveChord = d;
+                }
+            }
         });
 
         faces.on('touchend', (event, d) => {
             event.preventDefault();
             d.midiNotes.forEach(midi => this.bus.emit('noteOff', { midi }));
+            this.currentActiveChord = null;
         });
 
         // 2. Dibujar los nodos (Círculos)

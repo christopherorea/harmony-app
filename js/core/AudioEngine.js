@@ -29,7 +29,7 @@ class AudioEngine {
         if (AudioContext) {
             this.ctx = new AudioContext();
             this.gainNode = this.ctx.createGain();
-            this.gainNode.gain.value = 0.5;
+            this.gainNode.gain.value = 0.2; // Reducido de 0.5 a 0.2 para evitar saturación
             this.gainNode.connect(this.ctx.destination);
             console.log("AudioContext initialized");
         }
@@ -49,7 +49,8 @@ class AudioEngine {
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
 
         gain.gain.setValueAtTime(0, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.3, this.ctx.currentTime + 0.05);
+        // Reducido de 0.3 a 0.1 para evitar que la suma de notas sature el canal maestro
+        gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + 0.05);
 
         osc.connect(gain);
         gain.connect(this.gainNode);

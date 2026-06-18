@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <title>Web Harmony Tool</title>
     <link rel="stylesheet" href="css/style.css"> 
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#b89742">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
-<body>
+<body onload="registerSW()">
+    <script src="js/pwa-registration.js"></script>
     <div class="harmony-app">
         <main class="main-workspace">
             
